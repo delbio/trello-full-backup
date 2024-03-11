@@ -88,7 +88,11 @@ def download_attachments(c, max_size, tokenize=False):
 
             print('Saving attachment', attachment_name)
             try:
+                cheaders= {
+                  'Authorization': f'OAuth oauth_consumer_key="{API_KEY}",oauth_token="{API_TOKEN}"',
+                }
                 content = requests.get(attachment['url'],
+                                       headers= cheaders,
                                        stream=True,
                                        timeout=ATTACHMENT_REQUEST_TIMEOUT)
             except Exception:
@@ -132,18 +136,25 @@ def backup_board(board, args):
 
     tokenize = bool(args.tokenize)
 
-    board_details = requests.get(''.join((
+    board_rqst = requests.get(''.join((
         '{}boards/{}{}&'.format(API, board["id"], auth),
         'actions=all&actions_limit=1000&',
         'cards={}&'.format(FILTERS[args.archived_cards]),
+        "card_customFieldItems=true&",
+        "card_stickers=true&",
         'card_attachments=true&',
+        "card_attachment_fields=all&",
+        'card_members=all&',
+        "card_member_fields=all&",
         'labels=all&',
         'lists={}&'.format(FILTERS[args.archived_lists]),
         'members=all&',
         'member_fields=all&',
         'checklists=all&',
         'fields=all'
-    ))).json()
+    )))
+
+    board_details= board_rqst.json()
 
     board_dir = sanitize_file_name(board_details['name'])
 
