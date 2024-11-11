@@ -151,6 +151,8 @@ def backup_board(board, args):
         'members=all&',
         'member_fields=all&',
         'checklists=all&',
+        'checkItems=all&',
+        'checkItems_fields&',
         'fields=all'
     )))
 
